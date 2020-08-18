@@ -1,19 +1,10 @@
 <?php
 $file = "import.csv";
-$countLines = count(file($file));
-//print_r($countLines);
-$step = $countLines/100;
-$progress = 0;
-if (($fp = fopen($file, "r")) !== FALSE) {
-	while (($data = fgetcsv($fp, 0, ";")) !== FALSE) {
-        print_r(chr(8).chr(8).chr(8).chr(8));
-		$list[] = $data;
-        $progress = floor($progress+$step);
-        if ($progress>100) $progress = 100;
-        print_r((string)$progress."%");
-        //sleep(1);
-	}
-	fclose($fp);
-	//print_r($list);
-}
+include_once('importCSV.class.php');
+$icsv = new ImportCSV;
+$res = $icsv->setFileName($file);
+if ($res==FALSE) die("Файл не установлен");
+$res = $icsv->importFile();
+if ($res==TRUE) echo("Файл импортирован");
+    else echo("Файл не импортирован");
 ?>
