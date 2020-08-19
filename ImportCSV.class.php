@@ -1,7 +1,7 @@
 <?php
-class ImportCSV {
+include_once('LogErr.class.php');
+class ImportCSV extends LogErr{
     private $fileName;
-    private $err;
     private $progress;
     
     public function __construct(){
@@ -29,16 +29,6 @@ class ImportCSV {
 
     public function getFileName(){
         return $this->fileName;
-        }
-
-    private function setErrTxt($txt=''){
-        if (trim($txt)=='') return FALSE;
-        $this->err .= "\n".date('Y.m.d H:i:s').' - '.trim($txt)."\n";
-        return TRUE;
-        }
-
-    public function getErr(){
-        return $this->err;
         }
 
     public function getProgress(){
