@@ -162,6 +162,47 @@ class ConnectDB extends LogErr{
                 }
         return TRUE;
         }
+    
+    public function convertToSearch($inTxT="") {
+        $outTxT = trim($inTxT);
+        $outTxT = strtolower($outTxT);
+        while (strpos($outTxT, "  ")!==FALSE) {
+            $outTxT = str_replace("  ", " ", $outTxT);
+            }
+        return $outTxT;
+        }
+
+    public function sql($sql) {
+        $pdo = $this->getPDO();
+        if ($pdo==FALSE) {
+                $this->setErrTxt('Подключение к базе данных не получено');
+                return FALSE;
+                }
+        try {
+            $stm = $pdo->prepare($sql);
+            $stm->execute();
+            return $stm;
+            } catch (PDOException $e) {
+                $this->setErrTxt('Не удалось выполнить запрос: '.$e->getMessage());
+                return FALSE;
+                }
+        }
+
+    public function sqlParam($sql,$param) {
+        $pdo = $this->getPDO();
+        if ($pdo==FALSE) {
+                $this->setErrTxt('Подключение к базе данных не получено');
+                return FALSE;
+                }
+        try {
+            $stm = $pdo->prepare($sql);
+            $stm->execute($param);
+            } catch (PDOException $e) {
+                $this->setErrTxt('Не удалось выполнить запрос: '.$e->getMessage());
+                return FALSE;
+                }
+        return TRUE;
+        }
 
     }
 ?>

@@ -3,11 +3,13 @@ include_once('LogErr.class.php');
 class ImportCSV extends LogErr{
     private $fileName;
     private $progress;
+    private $importData;
     
     public function __construct(){
         $this->fileName = '';
         $this->err      = '';
         $this->progress = 0;
+        $this->importData = NULL;
         }
 
     public function setFileName($inFile){
@@ -35,6 +37,10 @@ class ImportCSV extends LogErr{
         return $this->progress;
         }
 
+    public function getImportData(){
+        return $this->importData;
+        }
+
     public function importFile($showProgress=TRUE){
         $file = $this->getFileName();
         if (trim($file)==''){
@@ -54,14 +60,17 @@ class ImportCSV extends LogErr{
         $step           = $countLines/100;
         $progress       = 0;
         $this->progress = $progress;
+        $arrayDataFull = array();
         while (($data = fgetcsv($fp, 0, ";")) !== FALSE) {
             if ($showProgress==TRUE) print_r(chr(8).chr(8).chr(8).chr(8));
             $progress = floor($progress+$step);
             if ($progress>100) $progress = 100;
             if ($showProgress==TRUE) print_r((string)$progress."%");
             $this->progress = $progress;
+            $arrayDataFull[] = $data;
             }
         fclose($fp);
+        $this->importData = $arrayDataFull;
         return TRUE;
         }
     }
