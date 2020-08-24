@@ -68,8 +68,28 @@ if ($res==TRUE) echo("Профессии помещены в базу\n");
         echo $conDB->getErr();
         die("Ошибки записи профессий\n");
         }
+
 $arrayRegion = array_column($importData, 8);
 unset($arrayRegion[0]);
+include_once('RegionDB.class.php');
+$regionDB = new RegionDB;
+$regionDB->setConnectDB($conDB);
+$res = $regionDB->put($arrayRegion);
+if ($res==TRUE) echo("Регионы помещены в базу\n");
+    else {
+        echo $conDB->getErr();
+        die("Ошибки записи регионов\n");
+        }
+
 $arrayCity = array_column($importData, 9);
 unset($arrayCity[0]);
+include_once('CityDB.class.php');
+$cityDB = new CityDB;
+$cityDB->setConnectDB($conDB);
+$res = $cityDB->put($arrayCity);
+if ($res==TRUE) echo("Города помещены в базу\n");
+    else {
+        echo $conDB->getErr();
+        die("Ошибки записи городов\n");
+        }
 ?>
