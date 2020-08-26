@@ -16,6 +16,28 @@ abstract class GuideDB extends LogErr{
         return $this->tableName;
         }
 
+    public function createTable() {
+        $conDB  = $this->getConnectDB();
+        if ($conDB==NULL) {
+            $this->setErrTxt("Нет объекта подклчения к базе данных");
+            return FALSE;
+            }
+        $sql = "SHOW TABLES LIKE '".$this->getTableName()."'";
+        $res = $conDB->sqlArrayAll($sql);
+        if ($res===FALSE) {
+                $this->setErrTxt("Ошибка проверки наличия таблицы ".$this->getTableName()." ".$conDB->getErr());
+                return FALSE;
+                }
+        if (count($res)>0) return TRUE;
+        $sql = "CREATE TABLE ".$this->getTableName()." ( ID INT NOT NULL AUTO_INCREMENT, name VARCHAR(255) NOT NULL, PRIMARY KEY (ID))";
+        $res = $conDB->sql($sql);
+        if ($res==FALSE) {
+                $this->setErrTxt("Ошибка создания таблицы ".$this->getTableName()." ".$conDB->getErr());
+                return FALSE;
+                }
+        return TRUE;
+        }
+
     public function selectTableNameAll() {
         $conDB  = $this->getConnectDB();
         if ($conDB==NULL) {
@@ -24,6 +46,21 @@ abstract class GuideDB extends LogErr{
             }
         $sql = "SELECT id, name FROM ".$this->getTableName();
         return $conDB->sql($sql);
+        }
+
+    public function selectTableNameArrayAll() {
+        $conDB  = $this->getConnectDB();
+        if ($conDB==NULL) {
+            $this->setErrTxt("Нет объекта подклчения к базе данных");
+            return FALSE;
+            }
+        $sql = "SELECT id, name FROM ".$this->getTableName();
+        $res = $conDB->sqlArrayAll($sql);
+        $arrayRes = array();
+        foreach ($res as $v) {
+            $arrayRes[$v['id']] = $v['name'];
+            }
+        return $arrayRes;
         }
 
     public function put($inData) {
@@ -50,7 +87,7 @@ abstract class GuideDB extends LogErr{
             $v = $conDB->convertToSearch($row['name']);
             if (array_key_exists($v, $arrayTableName)) {
                 if (trim($row['name'])!=trim($arrayTableName[$v])) {
-                    $arrayUpdate[$row['id']] = $arrayTableName[$v];
+                    $arrayUpdate[$row['ID']] = $arrayTableName[$v];
                     }
                 unset($arrayTableName[$v]);
                 }

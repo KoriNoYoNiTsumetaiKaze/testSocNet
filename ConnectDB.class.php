@@ -56,120 +56,26 @@ class ConnectDB extends LogErr{
                 }
         return TRUE;
         }
-
-    public function createProfession() {
-        $pdo = $this->getPDO();
-        if ($pdo==FALSE) {
-                $this->setErrTxt('Подключение к базе данных не получено');
-                return FALSE;
-                }
-        try {
-            $sql = "SHOW TABLES LIKE 'Profession'";
-            $stm = $pdo->prepare($sql);
-            $stm->execute();
-            $result = $stm->fetchAll();
-            if (count($result)>0) return TRUE;
-            
-            $sql = "CREATE TABLE Profession ( ID INT NOT NULL AUTO_INCREMENT, name VARCHAR(255) NOT NULL, PRIMARY KEY (ID))";
-            $stm = $pdo->prepare($sql);
-            $stm->execute();
-            } catch (PDOException $e) {
-                $this->setErrTxt('Cоздание таблицы Profession не удалось: '.$e->getMessage());
-                return FALSE;
-                }
-        return TRUE;
-        }
-
-    public function createRegion() {
-        $pdo = $this->getPDO();
-        if ($pdo==FALSE) {
-                $this->setErrTxt('Подключение к базе данных не получено');
-                return FALSE;
-                }
-        try {
-            $sql = "SHOW TABLES LIKE 'Region'";
-            $stm = $pdo->prepare($sql);
-            $stm->execute();
-            $result = $stm->fetchAll();
-            if (count($result)>0) return TRUE;
-            
-            $sql = "CREATE TABLE Region ( ID INT NOT NULL AUTO_INCREMENT, name VARCHAR(255) NOT NULL, PRIMARY KEY (ID))";
-            $stm = $pdo->prepare($sql);
-            $stm->execute();
-            } catch (PDOException $e) {
-                $this->setErrTxt('Cоздание таблицы Region не удалось: '.$e->getMessage());
-                return FALSE;
-                }
-        return TRUE;
-        }
-
-    public function createCity() {
-        $pdo = $this->getPDO();
-        if ($pdo==FALSE) {
-                $this->setErrTxt('Подключение к базе данных не получено');
-                return FALSE;
-                }
-        try {
-            $sql = "SHOW TABLES LIKE 'City'";
-            $stm = $pdo->prepare($sql);
-            $stm->execute();
-            $result = $stm->fetchAll();
-            if (count($result)>0) return TRUE;
-            
-            $sql = "CREATE TABLE City ( ID INT NOT NULL AUTO_INCREMENT, name VARCHAR(255) NOT NULL, PRIMARY KEY (ID))";
-            $stm = $pdo->prepare($sql);
-            $stm->execute();
-            } catch (PDOException $e) {
-                $this->setErrTxt('Cоздание таблицы City не удалось: '.$e->getMessage());
-                return FALSE;
-                }
-        return TRUE;
-        }
-
-    public function createStaff() {
-        $pdo = $this->getPDO();
-        if ($pdo==FALSE) {
-                $this->setErrTxt('Подключение к базе данных не получено');
-                return FALSE;
-                }
-        try {
-            $sql = "SHOW TABLES LIKE 'Staff'";
-            $stm = $pdo->prepare($sql);
-            $stm->execute();
-            $result = $stm->fetchAll();
-            if (count($result)>0) return TRUE;
-            
-            $sql = "CREATE TABLE Staff ( ID INT NOT NULL AUTO_INCREMENT,
-                                            ACTIVE BOOL DEFAULT TRUE NOT NULL,
-                                            name VARCHAR(255),
-                                            LAST_NAME VARCHAR(255),
-                                            EMAIL VARCHAR(255),
-                                            XML_ID VARCHAR(255),
-                                            PERSONAL_GENDER ENUM('F', 'M') DEFAULT 'M' NOT NULL,
-                                            PERSONAL_BIRTHDAY DATE,
-                                            ProfessionId INT,
-                                            RegionId INT,
-                                            CityId INT,
-                                            FOREIGN KEY (ProfessionId) REFERENCES Profession (ID) ON DELETE RESTRICT,
-                                            FOREIGN KEY (RegionId) REFERENCES Region (ID) ON DELETE RESTRICT,
-                                            FOREIGN KEY (CityId) REFERENCES City (ID) ON DELETE RESTRICT,
-                                            PRIMARY KEY (ID))";
-            $stm = $pdo->prepare($sql);
-            $stm->execute();
-            } catch (PDOException $e) {
-                $this->setErrTxt('Cоздание таблицы Staff не удалось: '.$e->getMessage());
-                return FALSE;
-                }
-        return TRUE;
-        }
     
     public function convertToSearch($inTxT="") {
         $outTxT = trim($inTxT);
-        $outTxT = strtolower($outTxT);
+        $outTxT = mb_strtolower($outTxT);
         while (strpos($outTxT, "  ")!==FALSE) {
             $outTxT = str_replace("  ", " ", $outTxT);
             }
         return $outTxT;
+        }
+
+    public function convertToSearchArray($inArr) {
+        if (!is_array($inArr)) {
+            $this->setErrTxt("Входящие данные не массив конвертация для поиска не возможна");
+            return FALSE;
+            }
+        $outArr = array();
+        foreach($inArr as $k => $v) {
+            $outArr[$k] = $this->convertToSearch($v);
+            }
+        return $outArr;
         }
 
     public function sql($sql) {
@@ -188,6 +94,22 @@ class ConnectDB extends LogErr{
                 }
         }
 
+    public function sqlArrayAll($sql) {
+        $pdo = $this->getPDO();
+        if ($pdo==FALSE) {
+                $this->setErrTxt('Подключение к базе данных не получено');
+                return FALSE;
+                }
+        try {
+            $stm = $pdo->prepare($sql);
+            $stm->execute();
+            return $stm->fetchAll();
+            } catch (PDOException $e) {
+                $this->setErrTxt('Не удалось выполнить запрос: '.$e->getMessage());
+                return FALSE;
+                }
+        }
+
     public function sqlParam($sql,$param) {
         $pdo = $this->getPDO();
         if ($pdo==FALSE) {
@@ -197,11 +119,27 @@ class ConnectDB extends LogErr{
         try {
             $stm = $pdo->prepare($sql);
             $stm->execute($param);
+            return $stm;
             } catch (PDOException $e) {
                 $this->setErrTxt('Не удалось выполнить запрос: '.$e->getMessage());
                 return FALSE;
                 }
-        return TRUE;
+        }
+
+    public function sqlParamArrayAll($sql,$param) {
+        $pdo = $this->getPDO();
+        if ($pdo==FALSE) {
+                $this->setErrTxt('Подключение к базе данных не получено');
+                return FALSE;
+                }
+        try {
+            $stm = $pdo->prepare($sql);
+            $stm->execute($param);
+            return $stm->fetchAll();
+            } catch (PDOException $e) {
+                $this->setErrTxt('Не удалось выполнить запрос: '.$e->getMessage());
+                return FALSE;
+                }
         }
 
     }
