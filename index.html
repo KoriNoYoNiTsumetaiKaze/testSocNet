@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8">
+  <title>Профиль</title>
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <script defer src="js/js.js"></script>
+ </head>
+ <body>
+  <div>
+   <img id="photo" alt="profile photo." width="20%" height="20%" src="img/panda.jpg">
+   <div class="makePhoto" id="cameraBox" hidden>
+    <video class="makePhoto" id="video" autoplay width="50%" height="50%"></video>
+    <canvas id="canvas" hidden width="20%" height="20%"></canvas>
+   </div>
+  </div>
+  <div id="btnsBox">
+   <button onclick="editPhoto()">Сменить фото</button>
+   <button class="makePhoto" onclick="makePhoto()" hidden>Сделать снимок</button>
+   <button class="makePhoto" onclick="cancelPhoto()" hidden>Отмена</button>
+  </div>
+  <div id="fullName">
+      <label>Фамилия:<input type="text"></label>
+      <label>Имя:<input type="text"></label>
+      <label>Отчество:<input type="text"></label>
+  </div>
+ </body>
+</html>

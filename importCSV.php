@@ -1,6 +1,6 @@
 <?php
-$file = "import.csv";
-include_once('ImportCSV.class.php');
+$file = $argv[1];
+include_once('ClassesPHP/ImportCSV.class.php');
 $icsv = new ImportCSV;
 $res = $icsv->setFileName($file);
 if ($res==FALSE) {
@@ -14,7 +14,7 @@ if ($res==TRUE) echo("Файл импортирован\n");
         die("Файл не импортирован\n");
         }
 
-include_once('ConnectDB.class.php');
+include_once('ClassesPHP/ConnectDB.class.php');
 $conDB = new ConnectDB;
 
 $res = $conDB->createDB();
@@ -24,7 +24,7 @@ if ($res==TRUE) echo("База существует\n");
         die("База не существует\n");
         }
 
-include_once('ProfessionDB.class.php');
+include_once('ClassesPHP/ProfessionDB.class.php');
 $profDB = new ProfessionDB;
 $profDB->setConnectDB($conDB);
 $res = $profDB->createTable();
@@ -34,7 +34,7 @@ if ($res==TRUE) echo("Таблица Profession существует\n");
         die("Таблица Profession не существует\n");
         }
 
-include_once('RegionDB.class.php');
+include_once('ClassesPHP/RegionDB.class.php');
 $regionDB = new RegionDB;
 $regionDB->setConnectDB($conDB);
 $res = $regionDB->createTable();
@@ -44,7 +44,7 @@ if ($res==TRUE) echo("Таблица Region существует\n");
         die("Таблица Region не существует\n");
         }
 
-include_once('CityDB.class.php');
+include_once('ClassesPHP/CityDB.class.php');
 $cityDB = new CityDB;
 $cityDB->setConnectDB($conDB);
 $res = $cityDB->createTable();
@@ -54,7 +54,7 @@ if ($res==TRUE) echo("Таблица City существует\n");
         die("Таблица City не существует\n");
         }
 
-include_once('StaffDB.class.php');
+include_once('ClassesPHP/StaffDB.class.php');
 $staffDB = new StaffDB;
 $staffDB->setConnectDB($conDB);
 $res = $staffDB->createTable();

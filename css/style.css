@@ -1,0 +1,25 @@
+body {
+ text-align: center;
+ margin: auto;
+}
+
+#cameraBox {
+ display: inline-block;
+}
+
+#btnsBox button {
+ margin: 5px 10%;
+}
+
+#fullName{
+ margin: 1% 0;
+}
+
+#fullName label {
+ margin: 5px 1%;
+}
+
+#fullName label input{
+ margin: 5px 1%;
+}
+
